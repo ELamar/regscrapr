@@ -1,0 +1,3 @@
+This project creates an interactive website that will scrape applicable regulatory web pages to return information about related parties to the regulated entity.  In some cases, it produces a network visualization of nodes and relationships.  In other cases, different visualizations are presented.  
+
+I anticipate several scraping files and concepts will be integrated successfully here.  The first is the idea to automatically determine if VIEWSTATE information has changed since the last scrapning of the site.  If so, the project will automatically retrieve and insert correct viewstate information.  
