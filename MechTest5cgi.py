@@ -136,8 +136,9 @@ for a in range(len(fp)):
   #cust = p1.find_all(text=re.compile("Legal(.*)name(\W+)custodian"))
   unqual = p1.find_all(text=re.compile("Does(.*)report(.*)auditing(.*)firm(.*)unqualified"))
   gross_asset_val = p1.find_all(text=re.compile("Current(.*)gross(.*)asset(.*)value(.*)of(.*)the"))
+  administrator = p1.find_all(text=re.compile("Name(.*)administrator"))
   outfile2.write("<table>\n")
-  outfile2.write("<tr><td colspan='2'>%s</td></tr>\n" % fundname.get_text(strip=True))
+  outfile2.write("<tr><td colspan='2'>%s</td></tr>\n" % fundname.get_text(strip=True).encode('utf-8'))
   outfile2.write("<br />\n")
   find_it(gross_asset_val)
   outfile2.write("<tr><td colspan='2'>Fund Current Gross Asset Value:%s</td></tr>\n" % (print_it()))
@@ -150,11 +151,13 @@ for a in range(len(fp)):
     sq = aud[i].parent.get_text(strip=True)
     sa1 = aud[i].parent.parent.parent.find('span',attrs={'class':'PrintHistRed'})
     sa2 = sa1.get_text(strip=True)
-    outfile2.write("<tr><td>%s:</td><td>%s</td></tr>\n" % (sq,sa2)) #tuple(s.split(':')))
+    outfile2.write("<tr><td>%s</td><td>%s</td></tr>\n" % (sq,sa2)) #tuple(s.split(':')))
   for i in range(len(unqual)):
     item1 = unqual[i].parent.parent.next_sibling.next_sibling
     yes = item1.find('img', attrs={'alt':re.compile("(\W+)Radio(.*)selected")})
     outfile2.write("<tr><td>Unqualified Opinion:%s</td></tr>\n" % (yes.next_sibling.encode('utf-8')))
+  find_it(administrator)
+  outfile2.write("<tr><td colspan='2'>Fund Administrator: %s</td></tr>\n" % (print_it()))
   outfile2.write("</table>\n")
 
 outfile2.write("</body></html>\n")
