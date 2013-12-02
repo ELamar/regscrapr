@@ -137,6 +137,7 @@ for a in range(len(fp)):
   unqual = p1.find_all(text=re.compile("Does(.*)report(.*)auditing(.*)firm(.*)unqualified"))
   gross_asset_val = p1.find_all(text=re.compile("Current(.*)gross(.*)asset(.*)value(.*)of(.*)the"))
   administrator = p1.find_all(text=re.compile("Name(.*)administrator"))
+  custodian = p1.find_all(text=re.compile("Legal(.*)name(.*)custodian"))
   outfile2.write("<table>\n")
   outfile2.write("<tr><td colspan='2'>%s</td></tr>\n" % fundname.get_text(strip=True).encode('utf-8'))
   outfile2.write("<br />\n")
@@ -158,6 +159,9 @@ for a in range(len(fp)):
     outfile2.write("<tr><td>Unqualified Opinion:%s</td></tr>\n" % (yes.next_sibling.encode('utf-8')))
   find_it(administrator)
   outfile2.write("<tr><td colspan='2'>Fund Administrator: %s</td></tr>\n" % (print_it()))
+  for i in range(len(custodian)):
+    c = custodian[i].parent.get_text(strip=True)
+    outfile2.write("<tr><td>%s:</td><td>%s</td></tr>\n" % tuple(c.split(':'))) #prints the list of custodians for the fund
   outfile2.write("</table>\n")
 
 outfile2.write("</body></html>\n")
