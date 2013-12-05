@@ -19,7 +19,7 @@ The Manager Table:
 
 Fund Table:
   |Fund ID (SEC Private Fund Identification Number)|Fund Name|Manager Number|
-   VARCHAR(20) - Primary|VARCHARD(75)|VARCHAR(75) - Foreign
+   VARCHAR(20) - Primary|VARCHARD(75)|VARCHAR(15) - Foreign
 
 Service Provider Table:
   |Service Provider ID (SEC CRD or IAPD Number or Generated Number if none)|Service Provide Name|Service Provider Type (Auditor, Prime Broker, Custodian, Administrator, Other)|
@@ -34,5 +34,5 @@ Manager Fund Bal and Audit Transaction Table:
   |VARCHAR(15)|VARCHAR(20)|Date(YYYY-MM-DD [First 3 fields are concatenated Primary Key|FLOAT(15,2)|VARCHAR(20)|FLOAT(15,2)|VARCHAR(5)
 
 Owner Table - lists direct and indirect ownership
-|Manager Number|Legal Name|DE_FE_I (Domestic Entity, Foreign Entity, Individual)|Status (Founding Partner, CEO, COO, etc.)|Date Status Acquired (Date formatting may be difficult here, SEC presents as M/YYYY, not YYYY-MM-DD MySQL format)|Ownership Code| Control Person|PR|CRD, EIN, SSN, Other ID|
-|VARCHAR(15)|VARCHAR(75)|VARCHAR(3)|VARCHAR(75)|DATE|VARCHAR(2)|VARCHAR(3)|VARCHAR(3)|VARCHAR(20)
+|Manager Number|Legal Name|DE_FE_I (Domestic Entity, Foreign Entity, Individual)|Status (Founding Partner, CEO, COO, etc.)|Date Status Acquired (Date formatting may be difficult here, SEC presents as M/YYYY, not YYYY-MM-DD MySQL format)|Ownership Code| Control Person|PR|CRD, EIN, SSN, Other ID|adv Date|
+|VARCHAR(15)|VARCHAR(75)|VARCHAR(3)|VARCHAR(75)|DATE|VARCHAR(2)|VARCHAR(3)|VARCHAR(3)|VARCHAR(20)|DATE
