@@ -3,6 +3,7 @@
 #This program retrieves the SEC IAPD Search page for a given Investment Adviser number.
 #It then retrieves Schedule D for that Adviser
 
+############################################################################################
 #Import Statements:
 
 import re
@@ -11,10 +12,12 @@ from bs4 import BeautifulSoup
 import cgi, cgitb
 from django.conf import settings
 from django.template import Context, Template
+#import MySQLdb
 
 #settings.configure = (DEBUG=True, TEMPLATE_DEBUG=True) #to configure the settings for Django
 #you have to configure the settings if you are using only a portion of Django
 
+############################################################################################
 
 #Set Variables:
 
@@ -23,6 +26,7 @@ ua = mechanize.UserAgentBase()
 ua.addheaders = [("User-agent"),("Mac Safari")]
 formtext = cgi.FieldStorage()
 
+############################################################################################
 
 #Retrieve IAPD number from webform, using 148823 as default if no number is input
 
@@ -31,6 +35,7 @@ if formtext.getvalue('mgrnumber'):
 else:
   adviser = 148823
 
+############################################################################################
 
 #The next set of lines is a 2-step mechanize process of navigating to a page, then submitting
 #a form request to get to the 'view all' page of the IAPD search.  The resulting page is
@@ -53,15 +58,23 @@ soup2 = BeautifulSoup(open("/Library/WebServer/Documents/iapdTemp.txt"))
 outfile2 = open("/Library/WebServer/Documents/outfile.html","w")
 outfile2.write("<html><body>\n")
 
+############################################################################################
 
 # First, find and print Manager name, number, Form ADV Date, and 
 #regulatory assets under management (AUM) at top of page.
+#This segment will also find the Manager's Owners and Executive Officers
 
 manName = soup2.find('span', attrs={'id':re.compile("ADVHeader_lblPrimaryBusinessName")})
 manNumber = soup2.find('span', attrs={'id':re.compile("ADVHeader_lblCrdNumber")})
 domsig = soup2.find('tr', attrs={'id':re.compile("ctl00_ctl00_cphMainContent_cphAdvFormContent_ADVExecutionDomesticPHSection")})
 nonres= soup2.find('tr', attrs={'id':'ctl00_ctl00_cphMainContent_cphAdvFormContent_ADVExecutionNonResidentPHSection_ctl00_trIAPDHeader'})
 regassets = soup2.find('span', attrs={'id':re.compile("AdvFormContent_AssetsUnderMgnmt_ctl00_lbl")})
+owner_table = soup2.find('table', attrs={'id':re.compile("ScheduleAPHSection_ctl00_ownersGrid")})
+th = owner_table.find_all('th') #you can print out headers by ' for i in range(len(th)):; print th[i].get_text(strip=True)'
+tr = owner_table.find_all('tr')
+indirect_owner_table = soup2.find('table', attrs={'id':re.compile("ScheduleBPHSection_ctl00_ownersGrid")})
+th2 = indirect_owner_table.find_all('th') #you can print out headers by ' for i in range(len(th)):; print th[i].get_text(strip=True)'
+tr2 = indirect_owner_table.find_all('tr')
 outfile2.write("<table>\n")
 outfile2.write("<tr><td>Manager Name: %s;</td><td>Manager Number: %s</tr>\n" % (manName.get_text(strip=True),manNumber.get_text(strip=True)))
 outfile2.write("</table>\n")
@@ -89,7 +102,7 @@ reds = a1.find_all('span', attrs={'PrintHistRed'}) # The array's 0th element is 
 outfile2.write("<tr><td>Manager Total Regulatory AUM: %s</td></tr>\n" % (reds[4].get_text(strip=True).encode('utf-8')))
 outfile2.write("</table>\n")
 
-
+############################################################################################
 #Next, find each of the private funds the manager manages and report AUM and Service Provider Information
 
 fundtd=soup2.find_all('td',text=re.compile("PRIVATE FUND")) #Loads all PRIVATE FUND sections into the fundtd array
@@ -113,16 +126,56 @@ for z in range(len(fundtd)):
 def find_it(var):
   global blank_array
   blank_array = []
-  return blank_array.append(var[0].parent.parent.next_sibling.next_sibling)
+  try:
+    return blank_array.append(var[0].parent.parent.next_sibling.next_sibling)
+  except IndexError:
+    return 'None'
    
 def print_it():
   #print blank_array[0].find('span', attrs={'class':re.compile("PrintHistRed")}).get_text(strip=True).encode('utf-8')
   #outfile.write(blank_array[0].find('span', attrs={'class':re.compile("PrintHistRed")}).get_text(strip=True).encode('utf-8'))
-  return blank_array[0].find('span', attrs={'class':re.compile("PrintHistRed")}).get_text(strip=True).encode('utf-8')
+  try:
+    return blank_array[0].find('span', attrs={'class':re.compile("PrintHistRed")}).get_text(strip=True).encode('utf-8')
+  except IndexError:
+    return 'None'
    
 def print_button():
   print blank_array[0].find('img', attrs={'alt':re.compile("(\W+)Radio(.*)selected")}).next_sibling.encode('utf-8')
 ###########################################################################################   
+
+#Printing the table of Direct Owners and Executive Officers
+outfile2.write("<p>\n")
+outfile2.write("<h3>Direct Owners and Executive Officer Table</h3>\n")
+outfile2.write("<table border='1'>\n")
+outfile2.write(''.join(map(str,th)))
+for i in range(len(tr)):
+  td = tr[i].find_all('td')
+  array = []
+  outfile2.write("<tr>")
+  for a in range(len(td)):
+    #array.append(td[a]) #array.append(td[a].get_text(strip=True))
+    outfile2.write("%s" % td[a])
+  outfile2.write("</tr>")
+outfile2.write("</table>\n")
+outfile2.write("</p>\n")
+
+#Printing table of Indirect Owners
+
+outfile2.write("<p>\n")
+outfile2.write("<h3>Indirect Owner Table</h3>\n")
+outfile2.write("<table border='1'>\n")
+outfile2.write(''.join(map(str,th2)))
+for i in range(len(tr2)):
+  td = tr2[i].find_all('td')
+  array = []
+  outfile2.write("<tr>")
+  for a in range(len(td)):
+    #array.append(td[a]) #array.append(td[a].get_text(strip=True))
+    outfile2.write("%s" % td[a])
+  outfile2.write("</tr>")
+outfile2.write("</table>\n")
+outfile2.write("</p>\n")
+
 
 blank_array = []
 
