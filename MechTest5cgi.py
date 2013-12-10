@@ -73,8 +73,9 @@ owner_table = soup2.find('table', attrs={'id':re.compile("ScheduleAPHSection_ctl
 th = owner_table.find_all('th') #you can print out headers by ' for i in range(len(th)):; print th[i].get_text(strip=True)'
 tr = owner_table.find_all('tr')
 indirect_owner_table = soup2.find('table', attrs={'id':re.compile("ScheduleBPHSection_ctl00_ownersGrid")})
-th2 = indirect_owner_table.find_all('th') #you can print out headers by ' for i in range(len(th)):; print th[i].get_text(strip=True)'
-tr2 = indirect_owner_table.find_all('tr')
+if indirect_owner_table:
+  th2 = indirect_owner_table.find_all('th')
+  tr2 = indirect_owner_table.find_all('tr')
 outfile2.write("<table>\n")
 outfile2.write("<tr><td>Manager Name: %s;</td><td>Manager Number: %s</tr>\n" % (manName.get_text(strip=True),manNumber.get_text(strip=True)))
 outfile2.write("</table>\n")
@@ -161,20 +162,21 @@ outfile2.write("</p>\n")
 
 #Printing table of Indirect Owners
 
-outfile2.write("<p>\n")
-outfile2.write("<h3>Indirect Owner Table</h3>\n")
-outfile2.write("<table border='1'>\n")
-outfile2.write(''.join(map(str,th2)))
-for i in range(len(tr2)):
-  td = tr2[i].find_all('td')
-  array = []
-  outfile2.write("<tr>")
-  for a in range(len(td)):
+if indirect_owner_table:
+  outfile2.write("<p>\n")
+  outfile2.write("<h3>Indirect Owner Table</h3>\n")
+  outfile2.write("<table border='1'>\n")
+  outfile2.write(''.join(map(str,th2)))
+  for i in range(len(tr2)):
+    td = tr2[i].find_all('td')
+    array = []
+    outfile2.write("<tr>")
+    for a in range(len(td)):
     #array.append(td[a]) #array.append(td[a].get_text(strip=True))
-    outfile2.write("%s" % td[a])
-  outfile2.write("</tr>")
-outfile2.write("</table>\n")
-outfile2.write("</p>\n")
+      outfile2.write("%s" % td[a])
+    outfile2.write("</tr>")
+  outfile2.write("</table>\n")
+  outfile2.write("</p>\n")
 
 
 blank_array = []
