@@ -186,6 +186,7 @@ for a in range(len(fp)):
   blank_array = []
   p1 = fp[a]
   fundname = p1.find('span',attrs={'class':'PrintHistRed'})
+  fund_no = p1.find('span',attrs={'class':'PrintHistRed'}, text=re.compile(r'805-(\d*)'))
   pb = p1.find_all(text=re.compile("Name(.*)prime(\W+)broker"))
   aud = p1.find_all(text=re.compile("Name(.*)auditing(\W+)firm"))
   #cust = p1.find_all(text=re.compile("Legal(.*)name(\W+)custodian"))
@@ -195,6 +196,9 @@ for a in range(len(fp)):
   custodian = p1.find_all(text=re.compile("Legal(.*)name(.*)custodian"))
   outfile2.write("<table>\n")
   outfile2.write("<tr><td colspan='2'>%s</td></tr>\n" % fundname.get_text(strip=True).encode('utf-8'))
+  outfile2.write("<br />\n")
+  if fund_no:
+    outfile2.write("<tr><td>Fund Number: </td><td>%s</td></tr>\n" % fund_no.get_text(strip=True))
   outfile2.write("<br />\n")
   find_it(gross_asset_val)
   outfile2.write("<tr><td colspan='2'>Fund Current Gross Asset Value:%s</td></tr>\n" % (print_it()))
