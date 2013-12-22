@@ -97,10 +97,15 @@ def find_class(tag):  #This is to be used to help get regulatory AUM for the Man
       class_array.append(p)
       return
   find_class(p)
-find_class(regassets)
-a1 = class_array[0] 
-reds = a1.find_all('span', attrs={'PrintHistRed'}) # The array's 0th element is discretionary AUM, the 4th element (zero-indexed) is total AUM.
-outfile2.write("<tr><td>Manager Total Regulatory AUM: %s</td></tr>\n" % (reds[4].get_text(strip=True).encode('utf-8')))
+
+if regassets:
+  find_class(regassets)
+  a1 = class_array[0] 
+  reds = a1.find_all('span', attrs={'PrintHistRed'}) # The array's 0th element is discretionary AUM, the 4th element (zero-indexed) is total AUM.
+  outfile2.write("<tr><td>Manager Total Regulatory AUM: %s</td></tr>\n" % (reds[4].get_text(strip=True).encode('utf-8')))
+else:
+  outfile2.write("<tr><td>Manager Total Regulatory AUM: %s</td></tr>\n" % ("NA"))
+
 outfile2.write("</table>\n")
 
 ############################################################################################
@@ -179,11 +184,11 @@ if indirect_owner_table:
   outfile2.write("</p>\n")
 
 
-blank_array = []
+#blank_array = []
 
 for a in range(len(fp)):
-  global blank_array
-  blank_array = []
+  #global blank_array
+  #blank_array = []
   p1 = fp[a]
   fundname = p1.find('span',attrs={'class':'PrintHistRed'})
   fund_no = p1.find('span',attrs={'class':'PrintHistRed'}, text=re.compile(r'805-(\d*)'))
